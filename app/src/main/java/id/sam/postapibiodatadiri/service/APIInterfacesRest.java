@@ -1,4 +1,5 @@
 package id.sam.postapibiodatadiri.service;
+import id.sam.postapibiodatadiri.model.Authentication;
 import id.sam.postapibiodatadiri.model.Result;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -58,6 +59,16 @@ public interface APIInterfacesRest {
            @Part MultipartBody.Part img2,
            @Part MultipartBody.Part img3,
  */
+
+   @FormUrlEncoded
+   @POST("user/login")
+   Call<Authentication> getAuthentication(@Field("username") String username,
+                                          @Field("password") String password);
+
+//   @Multipart
+//   @POST("user/login")
+//   Call<Authentication> getAuthentication(@Part("username") RequestBody username,
+//                                          @Part("password") RequestBody password);
 
    @Multipart
    @POST("biodata/add")
