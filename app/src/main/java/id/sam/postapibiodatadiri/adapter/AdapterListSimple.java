@@ -1,6 +1,10 @@
 package id.sam.postapibiodatadiri.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +28,20 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
 
     List<Biodatum> data;
     Context context;
+    private OnItemClickListener mOnItemClickListener;
 
     public AdapterListSimple(Context context, List<Biodatum> data){
         this.data = data;
         this.context = context;
+    }
+
+    public  interface  OnItemClickListener{
+        void onItemClick(@NonNull View view, Biodatum obj, int position);
+    }
+
+    public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mOnItemClickListener = mItemClickListener;
+
     }
 
     @NonNull
@@ -36,7 +50,6 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
         View view ;
 
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_biodata, parent, false);
-
 
         ViewHolder myViewHolder = new ViewHolder(view);
         return myViewHolder;
@@ -54,6 +67,36 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
 
         String image = data.get(position).getPhoto();
         Picasso.get().load(image).into(holder.imgPhoto);
+
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                CharSequence [] menupilih = {"Edit", "Delet"};
+                AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+                dialog.setTitle("Pilih Aksi");
+                dialog.setItems(menupilih, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+
+                                break;
+
+                            case 1:
+                                if (mOnItemClickListener != null) {
+                                    mOnItemClickListener.onItemClick(view, data.get(position), position);
+                                }
+                                data.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeRemoved(position, data.size());
+                                break;
+                        }
+                    }
+                });
+                dialog.create();
+                dialog.show();
+            }
+        });
     }
 
     @Override

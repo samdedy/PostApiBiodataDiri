@@ -117,15 +117,14 @@ public class MainActivity extends AppCompatActivity {
                 if (status != null) {
 
                     if (status.getStatus()) {
-
-
+                        Toast.makeText(MainActivity.this, "Data Berhasil ditambah", Toast.LENGTH_LONG).show();
+                        finish();
                     } else {
                         try {
                             JSONObject jObjError = new JSONObject(response.body().toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 } else {
                     try {

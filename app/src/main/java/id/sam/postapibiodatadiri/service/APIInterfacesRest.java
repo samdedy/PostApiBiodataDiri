@@ -1,5 +1,6 @@
 package id.sam.postapibiodatadiri.service;
 import id.sam.postapibiodatadiri.ListBiodataActivity;
+import id.sam.postapibiodatadiri.model.DeleteData;
 import id.sam.postapibiodatadiri.model.getall.ListBiodata;
 import id.sam.postapibiodatadiri.model.login.Authentication;
 import id.sam.postapibiodatadiri.model.Result;
@@ -63,27 +64,28 @@ public interface APIInterfacesRest {
            @Part MultipartBody.Part img3,
  */
 
-   @GET("biodata/all")
-   Call<ListBiodata> getListBiodata();
-
    @FormUrlEncoded
    @POST("user/login")
    Call<Authentication> getAuthentication(@Field("username") String username,
                                           @Field("password") String password);
 
+   @GET("biodata/all")
+   Call<ListBiodata> getListBiodata();
+
    @Multipart
    @POST("biodata/add")
    Call<Result> addData(
-
            @Part("nama") RequestBody nama,
            @Part("alamat") RequestBody alamat,
            @Part("telepon") RequestBody telepon,
            @Part("lat") RequestBody lat,
            @Part("lon") RequestBody lon,
            @Part MultipartBody.Part img1
-
-
    );
+
+   @FormUrlEncoded
+   @POST("Biodata/delete")
+   Call<DeleteData> deleteData(@Field("id") Integer id);
 
 /*
    @Multipart
