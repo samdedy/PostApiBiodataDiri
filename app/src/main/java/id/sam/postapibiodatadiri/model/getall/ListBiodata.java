@@ -1,5 +1,5 @@
 
-package id.sam.postapibiodatadiri.model;
+package id.sam.postapibiodatadiri.model.getall;
 
 import java.io.Serializable;
 import android.os.Parcel;
@@ -8,7 +8,7 @@ import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Authentication implements Serializable, Parcelable
+public class ListBiodata implements Serializable, Parcelable
 {
 
     @SerializedName("status")
@@ -20,54 +20,54 @@ public class Authentication implements Serializable, Parcelable
     @SerializedName("data")
     @Expose
     private Data data;
-    @SerializedName("token")
+    @SerializedName("total")
     @Expose
-    private String token;
-    public final static Creator<Authentication> CREATOR = new Creator<Authentication>() {
+    private Integer total;
+    public final static Creator<ListBiodata> CREATOR = new Creator<ListBiodata>() {
 
 
         @SuppressWarnings({
             "unchecked"
         })
-        public Authentication createFromParcel(Parcel in) {
-            return new Authentication(in);
+        public ListBiodata createFromParcel(Parcel in) {
+            return new ListBiodata(in);
         }
 
-        public Authentication[] newArray(int size) {
-            return (new Authentication[size]);
+        public ListBiodata[] newArray(int size) {
+            return (new ListBiodata[size]);
         }
 
     }
     ;
-    private final static long serialVersionUID = -6317767277453905438L;
+    private final static long serialVersionUID = 8597424428055385906L;
 
-    protected Authentication(Parcel in) {
+    protected ListBiodata(Parcel in) {
         this.status = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
         this.message = ((String) in.readValue((String.class.getClassLoader())));
         this.data = ((Data) in.readValue((Data.class.getClassLoader())));
-        this.token = ((String) in.readValue((String.class.getClassLoader())));
+        this.total = ((Integer) in.readValue((Integer.class.getClassLoader())));
     }
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public Authentication() {
+    public ListBiodata() {
     }
 
     /**
      * 
+     * @param total
      * @param data
      * @param message
      * @param status
-     * @param token
      */
-    public Authentication(Boolean status, String message, Data data, String token) {
+    public ListBiodata(Boolean status, String message, Data data, Integer total) {
         super();
         this.status = status;
         this.message = message;
         this.data = data;
-        this.token = token;
+        this.total = total;
     }
 
     public Boolean getStatus() {
@@ -94,19 +94,19 @@ public class Authentication implements Serializable, Parcelable
         this.data = data;
     }
 
-    public String getToken() {
-        return token;
+    public Integer getTotal() {
+        return total;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setTotal(Integer total) {
+        this.total = total;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(status);
         dest.writeValue(message);
         dest.writeValue(data);
-        dest.writeValue(token);
+        dest.writeValue(total);
     }
 
     public int describeContents() {

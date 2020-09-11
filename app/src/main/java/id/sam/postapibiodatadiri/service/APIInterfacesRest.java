@@ -1,11 +1,14 @@
 package id.sam.postapibiodatadiri.service;
-import id.sam.postapibiodatadiri.model.Authentication;
+import id.sam.postapibiodatadiri.ListBiodataActivity;
+import id.sam.postapibiodatadiri.model.getall.ListBiodata;
+import id.sam.postapibiodatadiri.model.login.Authentication;
 import id.sam.postapibiodatadiri.model.Result;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -60,15 +63,13 @@ public interface APIInterfacesRest {
            @Part MultipartBody.Part img3,
  */
 
+   @GET("biodata/all")
+   Call<ListBiodata> getListBiodata();
+
    @FormUrlEncoded
    @POST("user/login")
    Call<Authentication> getAuthentication(@Field("username") String username,
                                           @Field("password") String password);
-
-//   @Multipart
-//   @POST("user/login")
-//   Call<Authentication> getAuthentication(@Part("username") RequestBody username,
-//                                          @Part("password") RequestBody password);
 
    @Multipart
    @POST("biodata/add")

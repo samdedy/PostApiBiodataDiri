@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import id.sam.postapibiodatadiri.model.Authentication;
+import id.sam.postapibiodatadiri.model.login.Authentication;
 import id.sam.postapibiodatadiri.service.APIClient;
 import id.sam.postapibiodatadiri.service.APIInterfacesRest;
 import retrofit2.Call;
@@ -60,8 +60,7 @@ public class Login extends AppCompatActivity {
 //                Toast.makeText(Login.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
                 if (userList !=null) {
                     if (userList.getStatus()){
-                        Intent intent = new Intent(Login.this,ListBiodata.class);
-                        intent.putExtra("username",txtUsername.getText().toString());
+                        Intent intent = new Intent(Login.this, ListBiodataActivity.class);
                         startActivity(intent);
                     } else {
                         try {
