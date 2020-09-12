@@ -19,6 +19,7 @@ import id.sam.postapibiodatadiri.service.APIInterfacesRest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Header;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -54,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
     APIInterfacesRest apiInterface;
+    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoiMSJ9LCJpYXQiOjE1OTk4ODE1MTMsImV4cCI6MTU5OTk2NzkxM30.Br2A2inUV_HCl88EvxN9F9YD9G4b5PLhHYCKLkY1LbM";
     public void addUser(){
 
         apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
@@ -64,7 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
                 txtUsername.getText().toString(),
                 txtFullName.getText().toString(),
                 txtEmail.getText().toString(),
-                txtPassword.getText().toString());
+                txtPassword.getText().toString(),
+                token);
         call3.enqueue(new Callback<Registrasi>() {
             @Override
             public void onResponse(Call<Registrasi> call, Response<Registrasi> response) {
