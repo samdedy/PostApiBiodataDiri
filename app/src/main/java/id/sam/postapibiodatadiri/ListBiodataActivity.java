@@ -1,19 +1,17 @@
 package id.sam.postapibiodatadiri;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -32,13 +30,13 @@ import retrofit2.Response;
 public class ListBiodataActivity extends AppCompatActivity implements AdapterListSimple.OnItemClickListener{
 
     RecyclerView rvBiodata;
-    private View view;
-
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_biodata);
 
+        progressBar = findViewById(R.id.progressBar);
         rvBiodata = findViewById(R.id.rvBiodata);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -52,17 +50,14 @@ public class ListBiodataActivity extends AppCompatActivity implements AdapterLis
     }
 
     APIInterfacesRest apiInterface;
-    ProgressDialog progressDialog;
     public void callForecastbyCity(){
         apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
-        progressDialog = new ProgressDialog(ListBiodataActivity.this);
-        progressDialog.setTitle("Loading");
-        progressDialog.show();
+        progressBar.setVisibility(View.VISIBLE);
         Call<ListBiodata> call3 = apiInterface.getListBiodata();
         call3.enqueue(new Callback<ListBiodata>() {
             @Override
             public void onResponse(Call<ListBiodata> call, Response<ListBiodata> response) {
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
                 ListBiodata listBiodata = response.body();
                 if (listBiodata !=null) {
                     AdapterListSimple adapter = new AdapterListSimple(ListBiodataActivity.this,listBiodata.getData().getBiodata());
@@ -82,7 +77,7 @@ public class ListBiodataActivity extends AppCompatActivity implements AdapterLis
 
             @Override
             public void onFailure(Call<ListBiodata> call, Throwable t) {
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(),"Maaf koneksi bermasalah",Toast.LENGTH_LONG).show();
                 call.cancel();
             }
@@ -91,10 +86,12 @@ public class ListBiodataActivity extends AppCompatActivity implements AdapterLis
 
     public void deleteDataBiodata(Integer id){
         apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
+        progressBar.setVisibility(View.VISIBLE);
         Call<DeleteData> del = apiInterface.deleteData((Integer) id);
         del.enqueue(new Callback<DeleteData>() {
             @Override
             public void onResponse(Call<DeleteData> call, Response<DeleteData> response) {
+                progressBar.setVisibility(View.GONE);
                 DeleteData deleteBiodata = response.body();
                 if (deleteBiodata !=null) {
                     Toast.makeText(ListBiodataActivity.this, "data berhasil di hapus", Toast.LENGTH_LONG).show();
@@ -110,6 +107,7 @@ public class ListBiodataActivity extends AppCompatActivity implements AdapterLis
 
             @Override
             public void onFailure(Call<DeleteData> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(),"Maaf koneksi bermasalah",Toast.LENGTH_LONG).show();
                 call.cancel();
             }
@@ -117,13 +115,13 @@ public class ListBiodataActivity extends AppCompatActivity implements AdapterLis
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callForecastbyCity();
+    public void onItemClick(@NonNull View view, Biodatum obj, int position) {
+        deleteDataBiodata(Integer.parseInt(obj.getId()));
     }
 
     @Override
-    public void onItemClick(@NonNull View view, Biodatum obj, int position) {
-        deleteDataBiodata(Integer.parseInt(obj.getId()));
+    protected void onResume() {
+        super.onResume();
+        callForecastbyCity();
     }
 }

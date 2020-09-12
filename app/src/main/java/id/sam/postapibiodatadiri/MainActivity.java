@@ -20,8 +20,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import id.sam.postapibiodatadiri.model.Result;
+import id.sam.postapibiodatadiri.model.UpdateData;
 import id.sam.postapibiodatadiri.service.APIClient;
 import id.sam.postapibiodatadiri.service.APIInterfacesRest;
 import in.balakrishnan.easycam.CameraBundleBuilder;
@@ -39,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
     Button btnSend, btnCamera;
     ImageView imgFoto;
     private String[] list ;
+    int editData = 0;
+    String id_data = "";
     GeoLocator geoLocator;
-
+    Double lat = 0.0, lon = 0.0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,15 +60,37 @@ public class MainActivity extends AppCompatActivity {
         txtGPS = findViewById(R.id.txtGPS);
         imgFoto = findViewById(R.id.imgFoto);
 
+        lat = geoLocator.getLattitude();
+        lon = geoLocator.getLongitude();
+
+        txtGPS.setText(String.valueOf(lat)+";"+String.valueOf(lon));
         btnSend = findViewById(R.id.btnSend);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postUserData(txtName.getText().toString(),
-                        txtAlamat.getText().toString(),
-                        txtPhone.getText().toString(),
-                        String.valueOf(geoLocator.getLattitude()),
-                        String.valueOf(geoLocator.getLongitude()));
+                if (editData == 110){
+                    if (file != null) {
+                        editData(id_data,
+                                txtName.getText().toString(),
+                                txtAlamat.getText().toString(),
+                                txtPhone.getText().toString(),
+                                String.valueOf(lat),
+                                String.valueOf(lon));
+                    } else {
+                        editDataEnoughCamera(id_data,
+                                txtName.getText().toString(),
+                                txtAlamat.getText().toString(),
+                                txtPhone.getText().toString(),
+                                String.valueOf(lat),
+                                String.valueOf(lon));
+                    }
+                } else {
+                    postUserData(txtName.getText().toString(),
+                            txtAlamat.getText().toString(),
+                            txtPhone.getText().toString(),
+                            String.valueOf(lat),
+                            String.valueOf(lon));
+                }
             }
         });
 
@@ -71,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 ambilCamera();
             }
         });
+
+        editData = getIntent().getIntExtra("flag",0);
+        mappingEditData();
     }
 
     File file;
@@ -153,6 +186,117 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void editData(String id, String nama, String alamat, String telepon, String lat, String lon){
+        apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setTitle("Loading");
+        progressDialog.show();
+
+        RequestBody requestFile1 = RequestBody.create(MediaType.parse("image/jpeg"), file);
+        MultipartBody.Part bodyImg1 = MultipartBody.Part.createFormData("photo", file.getName(), requestFile1);
+
+        Call<UpdateData> absentAdd = apiInterface.updateData(
+                toRequestBody(id),
+                toRequestBody(nama),
+                toRequestBody(alamat),
+                toRequestBody(telepon),
+                toRequestBody(lat),
+                toRequestBody(lon),
+                bodyImg1);
+
+        absentAdd.enqueue(new Callback<UpdateData>() {
+            @Override
+            public void onResponse(Call<UpdateData> call, Response<UpdateData> response) {
+                progressDialog.dismiss();
+                UpdateData status = response.body();
+                //Toast.makeText(LoginActivity.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
+                if (status != null) {
+
+                    if (status.getStatus()) {
+                        Toast.makeText(MainActivity.this, "Data Berhasil diupdate", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                } else {
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        //     Toast.makeText(ShoppingProductGrid.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+                        String error = jObjError.get("message").toString();
+                        Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
+
+                    } catch (Exception e) {
+                        try {
+                            Toast.makeText(MainActivity.this, "Send Failed, " + response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        //    Toast.makeText(ShoppingProductGrid.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(),"Maaf koneksi bermasalah",Toast.LENGTH_LONG).show();
+                call.cancel();
+            }
+        });
+    }
+
+    public void editDataEnoughCamera(String id, String nama, String alamat, String telepon, String lat, String lon){
+        apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setTitle("Loading");
+        progressDialog.show();
+
+        Call<UpdateData> absentAdd = apiInterface.updateDatEnoughPhoto(
+                toRequestBody(id),
+                toRequestBody(nama),
+                toRequestBody(alamat),
+                toRequestBody(telepon),
+                toRequestBody(lat),
+                toRequestBody(lon),
+                toRequestBody(""));
+
+        absentAdd.enqueue(new Callback<UpdateData>() {
+            @Override
+            public void onResponse(Call<UpdateData> call, Response<UpdateData> response) {
+                progressDialog.dismiss();
+                UpdateData status = response.body();
+                //Toast.makeText(LoginActivity.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
+                if (status != null) {
+
+                    if (status.getStatus()) {
+                        Toast.makeText(MainActivity.this, "Data Berhasil diupdate", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                } else {
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        //     Toast.makeText(ShoppingProductGrid.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+                        String error = jObjError.get("message").toString();
+                        Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
+
+                    } catch (Exception e) {
+                        try {
+                            Toast.makeText(MainActivity.this, "Send Failed, " + response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        //    Toast.makeText(ShoppingProductGrid.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(),"Maaf koneksi bermasalah",Toast.LENGTH_LONG).show();
+                call.cancel();
+            }
+        });
+    }
+
     public RequestBody toRequestBody(String value) {
         if (value == null) {
             value = "";
@@ -178,5 +322,17 @@ public class MainActivity extends AppCompatActivity {
                 .setClearBucket(true)
                 .createCameraBundle());
         startActivityForResult(intent, 214);
+    }
+
+    public void mappingEditData(){
+        if (editData == 110){
+            id_data = getIntent().getStringExtra("id");
+            txtName.setText(getIntent().getStringExtra("nama"));
+            txtAlamat.setText(getIntent().getStringExtra("alamat"));
+            txtPhone.setText(getIntent().getStringExtra("telepon"));
+            txtGPS.setText(getIntent().getStringExtra("lat")+";"+getIntent().getStringExtra("lon"));
+            String image = getIntent().getStringExtra("photo");
+            Picasso.get().load(image).into(imgFoto);
+        }
     }
 }

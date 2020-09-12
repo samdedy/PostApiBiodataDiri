@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import id.sam.postapibiodatadiri.MainActivity;
 import id.sam.postapibiodatadiri.R;
 import id.sam.postapibiodatadiri.model.getall.Biodatum;
 
@@ -56,7 +57,7 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
 //
         holder.txtNama.setText(data.get(position).getNama());
@@ -66,12 +67,12 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
         holder.txtLon.setText(data.get(position).getLon());
 
         String image = data.get(position).getPhoto();
-        Picasso.get().load(image).into(holder.imgPhoto);
+        Picasso.get().load(image).resize(500, 500).centerCrop().into(holder.imgPhoto);
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                CharSequence [] menupilih = {"Edit", "Delet"};
+                CharSequence [] menupilih = {"Edit", "Delete"};
                 AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
                 dialog.setTitle("Pilih Aksi");
                 dialog.setItems(menupilih, new DialogInterface.OnClickListener() {
@@ -79,7 +80,16 @@ public class AdapterListSimple extends RecyclerView.Adapter<AdapterListSimple.Vi
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-
+                                Intent myIntent = new Intent(context, MainActivity.class);
+                                myIntent.putExtra("flag", 110);
+                                myIntent.putExtra("id", data.get(holder.getAdapterPosition()).getId());
+                                myIntent.putExtra("nama", data.get(holder.getAdapterPosition()).getNama());
+                                myIntent.putExtra("alamat", data.get(holder.getAdapterPosition()).getAlamat());
+                                myIntent.putExtra("telepon", data.get(holder.getAdapterPosition()).getTelepon());
+                                myIntent.putExtra("lat", data.get(holder.getAdapterPosition()).getLat());
+                                myIntent.putExtra("lon", data.get(holder.getAdapterPosition()).getLon());
+                                myIntent.putExtra("photo", data.get(holder.getAdapterPosition()).getPhoto());
+                                context.startActivity(myIntent);
                                 break;
 
                             case 1:

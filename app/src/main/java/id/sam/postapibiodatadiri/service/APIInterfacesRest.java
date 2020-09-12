@@ -1,6 +1,7 @@
 package id.sam.postapibiodatadiri.service;
 import id.sam.postapibiodatadiri.ListBiodataActivity;
 import id.sam.postapibiodatadiri.model.DeleteData;
+import id.sam.postapibiodatadiri.model.UpdateData;
 import id.sam.postapibiodatadiri.model.getall.ListBiodata;
 import id.sam.postapibiodatadiri.model.login.Authentication;
 import id.sam.postapibiodatadiri.model.Result;
@@ -81,6 +82,30 @@ public interface APIInterfacesRest {
            @Part("lat") RequestBody lat,
            @Part("lon") RequestBody lon,
            @Part MultipartBody.Part img1
+   );
+
+   @Multipart
+   @POST("Biodata/update")
+   Call<UpdateData> updateData(
+           @Part("id") RequestBody id,
+           @Part("nama") RequestBody nama,
+           @Part("alamat") RequestBody alamat,
+           @Part("telepon") RequestBody telepon,
+           @Part("lat") RequestBody lat,
+           @Part("lon") RequestBody lon,
+           @Part MultipartBody.Part img1
+   );
+
+   @Multipart
+   @POST("Biodata/update")
+   Call<UpdateData> updateDatEnoughPhoto(
+           @Part("id") RequestBody id,
+           @Part("nama") RequestBody nama,
+           @Part("alamat") RequestBody alamat,
+           @Part("telepon") RequestBody telepon,
+           @Part("lat") RequestBody lat,
+           @Part("lon") RequestBody lon,
+           @Part("photo") RequestBody photo
    );
 
    @FormUrlEncoded
