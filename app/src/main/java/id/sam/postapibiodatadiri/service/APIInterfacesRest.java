@@ -1,6 +1,7 @@
 package id.sam.postapibiodatadiri.service;
 import id.sam.postapibiodatadiri.ListBiodataActivity;
 import id.sam.postapibiodatadiri.model.DeleteData;
+import id.sam.postapibiodatadiri.model.Registrasi;
 import id.sam.postapibiodatadiri.model.UpdateData;
 import id.sam.postapibiodatadiri.model.getall.ListBiodata;
 import id.sam.postapibiodatadiri.model.login.Authentication;
@@ -11,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -69,6 +71,15 @@ public interface APIInterfacesRest {
    @POST("user/login")
    Call<Authentication> getAuthentication(@Field("username") String username,
                                           @Field("password") String password);
+
+   @Headers("X-Token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImlkIjoiMSJ9LCJpYXQiOjE1OTk4ODE1MTMsImV4cCI6MTU5OTk2NzkxM30.Br2A2inUV_HCl88EvxN9F9YD9G4b5PLhHYCKLkY1LbM")
+   @FormUrlEncoded
+   @POST("user/add")
+   Call<Registrasi> addUser(
+           @Field("username") String username,
+           @Field("full_name") String full_name,
+           @Field("email") String email,
+           @Field("password") String password);
 
    @GET("biodata/all")
    Call<ListBiodata> getListBiodata();

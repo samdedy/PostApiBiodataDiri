@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import id.sam.postapibiodatadiri.model.Registrasi;
 import id.sam.postapibiodatadiri.model.login.Authentication;
 import id.sam.postapibiodatadiri.service.APIClient;
 import id.sam.postapibiodatadiri.service.APIInterfacesRest;
@@ -19,78 +20,82 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Login extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    TextView txtUsername, txtPassword;
-    Button btnLogin, btnDaftar;
+    TextView txtUsername, txtFullName, txtEmail, txtPassword;
+    Button btnDaftar, btnBatal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
-        getSupportActionBar().setTitle("Login");
+        getSupportActionBar().setTitle("Registrasi");
+
         txtUsername = findViewById(R.id.txtUsername);
+        txtFullName = findViewById(R.id.txtFullName);
+        txtEmail = findViewById(R.id.txtEmail);
         txtPassword = findViewById(R.id.txtPassword);
         btnDaftar = findViewById(R.id.btnDaftar);
         btnDaftar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Login.this, RegisterActivity.class);
-                startActivity(intent);
+                addUser();
             }
         });
-        btnLogin = findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnBatal = findViewById(R.id.btnBatal);
+        btnBatal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callAuthentication(txtUsername.getText().toString().trim(),txtPassword.getText().toString().trim());
+                finish();
             }
         });
     }
 
     ProgressDialog progressDialog;
     APIInterfacesRest apiInterface;
-    public void callAuthentication(final String username, String password){
+    public void addUser(){
 
         apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
-        progressDialog = new ProgressDialog(Login.this);
+        progressDialog = new ProgressDialog(RegisterActivity.this);
         progressDialog.setTitle("Loading");
         progressDialog.show();
-        Call<Authentication> call3 = apiInterface.getAuthentication(
-                username,
-                password);
-        call3.enqueue(new Callback<Authentication>() {
+        Call<Registrasi> call3 = apiInterface.addUser(
+                txtUsername.getText().toString(),
+                txtFullName.getText().toString(),
+                txtEmail.getText().toString(),
+                txtPassword.getText().toString());
+        call3.enqueue(new Callback<Registrasi>() {
             @Override
-            public void onResponse(Call<Authentication> call, Response<Authentication> response) {
+            public void onResponse(Call<Registrasi> call, Response<Registrasi> response) {
                 progressDialog.dismiss();
-                Authentication userList = response.body();
-//                Toast.makeText(Login.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
+                Registrasi userList = response.body();
                 if (userList !=null) {
                     if (userList.getStatus()){
-                        Intent intent = new Intent(Login.this, ListBiodataActivity.class);
+                        Toast.makeText(RegisterActivity.this,"Registrasi berhasil", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(RegisterActivity.this, Login.class);
                         startActivity(intent);
                     } else {
                         try {
                             JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            Toast.makeText(Login.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
-                            Toast.makeText(Login.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
 
                 }else{
                     try {
                         JSONObject jObjError = new JSONObject(response.errorBody().string());
-                        Toast.makeText(Login.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
-                        Toast.makeText(Login.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<Authentication> call, Throwable t) {
+            public void onFailure(Call<Registrasi> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(getApplicationContext(),"Maaf koneksi bermasalah",Toast.LENGTH_LONG).show();
                 call.cancel();
